@@ -3,7 +3,7 @@ package flush
 import (
 	"time"
 
-	"github.com/utr1903/newrelic-tracker-internal/internal/metrics"
+	"github.com/utr1903/newrelic-tracker-internal/metrics"
 )
 
 const (

@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/utr1903/newrelic-tracker-internal/internal/graphql"
-	"github.com/utr1903/newrelic-tracker-internal/internal/logging"
+	"github.com/utr1903/newrelic-tracker-internal/graphql"
+	"github.com/utr1903/newrelic-tracker-internal/logging"
 )
 
 const (
