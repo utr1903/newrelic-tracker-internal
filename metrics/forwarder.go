@@ -1,4 +1,4 @@
-package metrics
+package internal
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/utr1903/newrelic-tracker-internal/logging"
+	logging "github.com/utr1903/newrelic-tracker-internal/logging"
 )
 
 const (

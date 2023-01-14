@@ -1,4 +1,4 @@
-package graphql
+package internal
 
 // --- GraphQL for NRQL query --- //
 type GraphQlResponse[T interface{}] struct {

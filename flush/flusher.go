@@ -1,9 +1,9 @@
-package flush
+package internal
 
 import (
 	"time"
 
-	"github.com/utr1903/newrelic-tracker-internal/metrics"
+	metrics "github.com/utr1903/newrelic-tracker-internal/metrics"
 )
 
 const (

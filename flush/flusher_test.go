@@ -1,4 +1,4 @@
-package flush
+package internal
 
 import (
 	"errors"

@@ -1,4 +1,4 @@
-package fetch
+package internal
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/utr1903/newrelic-tracker-internal/graphql"
+	graphql "github.com/utr1903/newrelic-tracker-internal/graphql"
 )
 
 type loggerMock struct {
