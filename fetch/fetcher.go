@@ -1,42 +1,21 @@
 package internal
 
 import (
-	"errors"
-	"fmt"
-
-	"github.com/sirupsen/logrus"
-
 	graphql "github.com/utr1903/newrelic-tracker-internal/graphql"
-	logging "github.com/utr1903/newrelic-tracker-internal/logging"
 )
 
 const (
 	FETCHER_GRAPHQL_HAS_RETURNED_ERRORS = "graphql has returned errors"
 )
 
-func Fetch[T any](
-	logger logging.ILogger,
+func Fetch(
 	gqlc graphql.IGraphQlClient,
 	qv any,
-) (
-	[]T,
-	error,
-) {
-	res := &graphql.GraphQlResponse[T]{}
+	res any,
+) error {
 	err := gqlc.Execute(qv, res)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	if res.Errors != nil {
-		logger.LogWithFields(logrus.DebugLevel, FETCHER_GRAPHQL_HAS_RETURNED_ERRORS,
-			map[string]string{
-				"tracker.package": "internal.fetch",
-				"tracker.file":    "fetcher.go",
-				"tracker.error":   fmt.Sprintf("%v", res.Errors),
-			})
-		return nil, errors.New(FETCHER_GRAPHQL_HAS_RETURNED_ERRORS)
-	}
-
-	return res.Data.Actor.Nrql.Results, nil
+	return nil
 }

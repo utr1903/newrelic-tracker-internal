@@ -106,7 +106,7 @@ func Test_CreatingHttpRequestFails(t *testing.T) {
 
 	logger := newLoggerMock()
 
-	res := &GraphQlResponse[string]{}
+	res := map[string]string{}
 	gqlc := NewGraphQlClient(
 		logger,
 		"::",
@@ -130,7 +130,7 @@ func Test_PerformingHttpRequestFails(t *testing.T) {
 
 	logger := newLoggerMock()
 
-	res := &GraphQlResponse[string]{}
+	res := map[string]string{}
 	gqlc := NewGraphQlClient(
 		logger,
 		"",
@@ -162,7 +162,7 @@ func Test_GraphQlReturnsNotOkStatus(t *testing.T) {
 
 	logger := newLoggerMock()
 
-	res := &GraphQlResponse[string]{}
+	res := map[string]string{}
 	gqlc := NewGraphQlClient(
 		logger,
 		newrelicGraphQlServerMock.URL,
@@ -196,7 +196,7 @@ func Test_ParsingHttpRequestFails(t *testing.T) {
 
 	logger := newLoggerMock()
 
-	res := &GraphQlResponse[string]{}
+	res := map[string]string{}
 	gqlc := NewGraphQlClient(
 		logger,
 		newrelicGraphQlServerMock.URL,
@@ -219,7 +219,9 @@ func Test_GraphQlRequestSucceeds(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			var b bytes.Buffer
 
-			res := &graphqlResponseMock{}
+			res := map[string]string{
+				"key": "val",
+			}
 			json, _ := json.Marshal(res)
 			b.Write(json)
 
@@ -233,7 +235,7 @@ func Test_GraphQlRequestSucceeds(t *testing.T) {
 
 	logger := newLoggerMock()
 
-	res := &GraphQlResponse[string]{}
+	res := map[string]string{}
 	gqlc := NewGraphQlClient(
 		logger,
 		newrelicGraphQlServerMock.URL,
@@ -245,7 +247,10 @@ func Test_GraphQlRequestSucceeds(t *testing.T) {
 			AccountId: accountId,
 			NrqlQuery: nrqlQuery,
 		},
-		res)
+		&res)
 
 	assert.Nil(t, err)
+	val, ok := res["key"]
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "val", val)
 }

@@ -1,38 +1,15 @@
 package internal
 
 import (
+	"encoding/json"
 	"errors"
 	"testing"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	graphql "github.com/utr1903/newrelic-tracker-internal/graphql"
 )
-
-type loggerMock struct {
-	msgs []string
-}
-
-func newLoggerMock() *loggerMock {
-	return &loggerMock{
-		msgs: make([]string, 0),
-	}
-}
-func (l *loggerMock) LogWithFields(
-	lvl logrus.Level,
-	msg string,
-	attributes map[string]string,
-) {
-	l.msgs = append(l.msgs, msg)
-}
-
-func (l *loggerMock) Flush() error {
-	return nil
-}
 
 type graphqlClientMock struct {
 	failRequest bool
-	returnError bool
 }
 
 func (c *graphqlClientMock) Execute(
@@ -42,49 +19,43 @@ func (c *graphqlClientMock) Execute(
 	if c.failRequest {
 		return errors.New("error")
 	}
-	if c.returnError {
-		res := result.(*graphql.GraphQlResponse[string])
-		res.Errors = []string{"err"}
-		return nil
+
+	// Create mock response to convert into bytes
+	responseMock := map[string]string{
+		"test": "test",
 	}
-	res := result.(*graphql.GraphQlResponse[string])
-	res.Data.Actor.Nrql.Results = []string{"data"}
-	res.Errors = nil
+	bytes, err := json.Marshal(responseMock)
+	if err != nil {
+		panic(err)
+	}
+
+	// Put the responseMock into result
+	err = json.Unmarshal(bytes, result)
+	if err != nil {
+		panic(err)
+	}
+
 	return nil
 }
 
 func Test_GraphQlRequestFails(t *testing.T) {
-	logger := newLoggerMock()
 	gqlc := &graphqlClientMock{
 		failRequest: true,
 	}
 
-	res, err := Fetch[string](logger, gqlc, "qv")
-	assert.Nil(t, res)
-	assert.NotNil(t, err)
-}
+	res := map[string]string{}
+	err := Fetch(gqlc, "qv", &res)
 
-func Test_GraphQlRequestReturnsError(t *testing.T) {
-	logger := newLoggerMock()
-	gqlc := &graphqlClientMock{
-		failRequest: false,
-		returnError: true,
-	}
-
-	res, err := Fetch[string](logger, gqlc, "qv")
-	assert.Nil(t, res)
 	assert.NotNil(t, err)
-	assert.Contains(t, logger.msgs, FETCHER_GRAPHQL_HAS_RETURNED_ERRORS)
 }
 
 func Test_GraphQlRequestSucceeds(t *testing.T) {
-	logger := newLoggerMock()
 	gqlc := &graphqlClientMock{
 		failRequest: false,
-		returnError: false,
 	}
 
-	res, err := Fetch[string](logger, gqlc, "qv")
+	res := map[string]string{}
+	err := Fetch(gqlc, "qv", &res)
 	assert.NotNil(t, res)
 	assert.Nil(t, err)
 }
