@@ -6,13 +6,10 @@ import (
 	metrics "github.com/utr1903/newrelic-tracker-internal/metrics"
 )
 
-const (
-	FLUSHER_FLUSHING_METRICS = "flushing metrics"
-)
-
 type FlushMetric struct {
 	Name       string
 	Value      float64
+	Timestamp  int64
 	Attributes map[string]string
 }
 
@@ -23,8 +20,14 @@ func Flush(
 
 	// Add individual metrics
 	for _, metric := range metrics {
+
+		// No timestamp is given, set it to now
+		if metric.Timestamp == 0 {
+			metric.Timestamp = time.Now().UnixMicro()
+		}
+
 		mf.AddMetric(
-			time.Now().UnixMicro(),
+			metric.Timestamp,
 			metric.Name,
 			"gauge",
 			metric.Value,
